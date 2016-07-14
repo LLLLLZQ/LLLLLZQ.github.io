@@ -76,7 +76,7 @@
 						<li>Links</li>
 						
 						
-						<li>Über</li>
+						<li>About</li>
 						
 					</ul>
 				</div>
@@ -199,11 +199,11 @@
 
       <div class="body-wrap">
   
-    <article id="post-First" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-iOS开发知识累积" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/14/First/" class="article-date">
-  	<time datetime="2016-07-14T11:46:35.000Z" itemprop="datePublished">2016-07-14</time>
+      <a href="/2016/07/10/iOS开发知识累积/" class="article-date">
+  	<time datetime="2016-07-10T08:36:29.000Z" itemprop="datePublished">2016-07-10</time>
 </a>
     </div>
   
@@ -212,11 +212,83 @@
       <input type="hidden" class="isFancy" />
     
     
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/10/iOS开发知识累积/">iOS开发知识累积</a>
+    </h1>
+  
+
+      </header>
+      
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <hr>
-<p>这是第一篇Blog</p>
+        <ul>
+<li>AutoLayout</li>
+</ul>
+<ol>
+<li><p>Intrinsic Content Size</p>
+<p> 翻译过来就是：固有内容大小</p>
+<p> 对应的系统方法是：<code>- (CGSize)intrinsicContentSize</code></p>
+<p> 通过这样的方式设置UILable的约束，它的大小和内容大小刚好一致，想要UILabel四周有留白，需要重写刚才说到的方法。相比较于UIView本身，你可以用代码实现这个方法，返回一个默认大小，如果是在XIB里面，直接设置就OK了。</p>
+</li>
+<li><p>Compression Resistance</p>
+<p> 这个叫作内容压缩阻力优先级（小名：别挤我），该优先级越高，则越晚轮到被压缩</p>
+</li>
+<li><p>Content Hugging Priority </p>
+<p> 这个叫作内容紧靠优先级（小名：别扯我），该优先级越高，就越晚被轮到拉伸</p>
+</li>
+<li><p>建立视图约束</p>
+<p> 一个视图如果通过约束来实现布局的话，大部分自定义UIView都需要至少4个约束来确定frame。针对于UIScrollView特殊的视图，至少需要6条。PS：UIScrollView的contentSize需要由内部的子视图来确定</p>
+</li>
+</ol>
 <hr>
+<ul>
+<li><p>UIView 和 CALayer 的区别</p>
+<ol>
+<li><p>UIView可以响应事件，而Layer不可以。</p>
+<p> 在iOS中，UIKit使用UIResponder作为响应对象，来响应系统传递过来的事件并进行处理。所有从UIView派生处理的UIKit类都直接或者间接继承了该类。而CALayer直接继承NSObject，并没有相应的处理事件的接口。</p>
+</li>
+<li><p>UIView主要负责对显示内容的管理，而Layer主要侧重显示内容的绘制并进行动画处理。</p>
+</li>
+<li><p>UIView和CALayer是相互依赖的关系。UIView依赖CALayer提高的内容，而CALayer依赖UIView提供的容器来显示绘制的内容。</p>
+</li>
+</ol>
+</li>
+</ul>
+<hr>
+<ul>
+<li><p>Swift 创建单例</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">static let shareInstance = XXX()</div><div class="line">private override init() &#123;&#125;</div></pre></td></tr></table></figure>
+<p>  解释：全局变量（还有结构体和枚举体的静态成员）的Lazy初始化方法会在其被访问的时候调用一次。类似于调用”dispatch_once”以保证其初始化的原子性。同时必须保证init方法的私有性，只有这样，才能保证单例是真正唯一的，避免外部对象通过访问init方法创建单例类的其他实例。由于Swift中的所有对象都是由公共的初始化方法创建的，我们需要重写自己的init方法，并设置其为私有的。</p>
+</li>
+<li><p>OC 创建单例</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">static shareInstance = nil;</div><div class="line">static dispatch_once_t onceToken;</div><div class="line">dispatch_once(&amp;onceToken,^&#123;</div><div class="line">	shareInstance = [[self alloc] init];</div><div class="line">&#125;);</div><div class="line">return shareInstance;</div></pre></td></tr></table></figure>
+<p>  解释：利用GCD</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li><p>多线程GCD</p>
+<p>  是苹果为多核的并行运算提出的解决方案，所以会自动合理的利用更多的CPU内核，最重要的是它会自动管理现场的生命周期（创建线程、调度任务、销毁线程）。</p>
+<p>  两个重要的概念：任务  和  队列</p>
+<p>  任务：即操作，在GCD中就是一个Block。任务存在两种执行方式：同步执行和异步执行，它们直接的区别是 是否会创建新的线程。</p>
+<ul>
+<li><p>同步（sync），它会阻塞当前线程并等待Block中的任务执行完毕，然和当前线程才会继续往下运行。</p>
+</li>
+<li><p>异步（async），当前线程会直接往下执行，它不会阻塞当前线程。</p>
+<p>队列：用于存放任务。队列存在两种：串行队列和并行队列</p>
+</li>
+<li><p>串行队列中的任务会根据队列的定义FIFO的执行，一个接一个的先进先出的进行执行。</p>
+</li>
+<li><p>并行队列中的任务也会根据FIFO执行，但是取出来之后，会将该任务放到另一线程中去执行，然后再取出一个任务放到另一个中去。由于这样的操作很快，在我们看来就是多任务异步执行的。</p>
+<p>综上所述，同步串行（当前线程）、异步串行（当前线程）、同步并行队列（其他线程），任务都是顺序执行 ，而异步并行队列的任务才是同时执行！</p>
+</li>
+</ul>
+</li>
+</ul>
 
       
     </div>
